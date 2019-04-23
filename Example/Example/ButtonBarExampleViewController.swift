@@ -30,6 +30,8 @@ class ButtonBarExampleViewController: ButtonBarPagerTabStripViewController {
     var isReload = false
 
     override func viewDidLoad() {
+        settings.style.selectedBarHeight = 3
+        settings.style.selectedBarWidth = 16
         super.viewDidLoad()
 
         buttonBarView.selectedBar.backgroundColor = .orange

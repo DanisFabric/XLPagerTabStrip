@@ -56,6 +56,12 @@ open class ButtonBarView: UICollectionView {
             updateSelectedBarYPosition()
         }
     }
+    internal var selectedBarWidth: CGFloat? {
+        didSet {
+            updateSelectedBarYPosition()
+        }
+    }
+    
     var selectedBarVerticalAlignment: SelectedBarVerticalAlignment = .bottom
     var selectedBarAlignment: SelectedBarAlignment = .center
     var selectedIndex = 0
@@ -100,7 +106,11 @@ open class ButtonBarView: UICollectionView {
         targetFrame.size.width += (toFrame.size.width - fromFrame.size.width) * progressPercentage
         targetFrame.origin.x += (toFrame.origin.x - fromFrame.origin.x) * progressPercentage
 
-        selectedBar.frame = CGRect(x: targetFrame.origin.x, y: selectedBar.frame.origin.y, width: targetFrame.size.width, height: selectedBar.frame.size.height)
+        if let selectedBarWidth = selectedBarWidth {
+            selectedBar.frame = CGRect(x: targetFrame.origin.x + (targetFrame.size.width - selectedBarWidth) / 2, y: selectedBar.frame.origin.y, width: selectedBarWidth, height: selectedBar.frame.size.height)
+        } else {
+            selectedBar.frame = CGRect(x: targetFrame.origin.x, y: selectedBar.frame.origin.y, width: targetFrame.size.width, height: selectedBar.frame.size.height)
+        }
 
         var targetContentOffset: CGFloat = 0.0
         if contentSize.width > frame.size.width {
@@ -122,8 +132,13 @@ open class ButtonBarView: UICollectionView {
 
         updateContentOffset(animated: animated, pagerScroll: pagerScroll, toFrame: selectedCellFrame, toIndex: (selectedCellIndexPath as NSIndexPath).row)
 
-        selectedBarFrame.size.width = selectedCellFrame.size.width
-        selectedBarFrame.origin.x = selectedCellFrame.origin.x
+        if let selectedBarWidth = selectedBarWidth {
+            selectedBarFrame.size.width = selectedBarWidth
+            selectedBarFrame.origin.x = selectedCellFrame.origin.x + (selectedCellFrame.size.width - selectedBarWidth) / 2
+        } else {
+            selectedBarFrame.size.width = selectedCellFrame.size.width
+            selectedBarFrame.origin.x = selectedCellFrame.origin.x
+        }
 
         if animated {
             UIView.animate(withDuration: 0.3, animations: { [weak self] in
